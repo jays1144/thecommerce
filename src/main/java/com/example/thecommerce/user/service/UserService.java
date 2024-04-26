@@ -3,7 +3,6 @@ package com.example.thecommerce.user.service;
 
 import com.example.thecommerce.user.dto.JoinRequestDto;
 import com.example.thecommerce.user.dto.UserListResponseDto;
-import com.example.thecommerce.user.dto.UserResponseDto;
 import com.example.thecommerce.user.dto.UserUpdateRequestDto;
 import com.example.thecommerce.user.entity.User;
 import com.example.thecommerce.user.repository.UserRepository;

@@ -1,7 +1,6 @@
 package com.example.thecommerce.user.dto;
 
 
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 
@@ -23,7 +22,7 @@ public class JoinRequestDto {
 
     @ApiModelProperty(example = "1!aA33333")
     @NotBlank
-//    @Pattern(regexp = "(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,15}", message = "비밀번호는 8~15자 영문 대 소문자, 숫자, 특수문자를 사용하세요.")
+    @Pattern(regexp = "(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,15}", message = "비밀번호는 8~15자 영문 대 소문자, 숫자, 특수문자를 사용하세요.")
     private String password;
 
     @ApiModelProperty(example = "nick")

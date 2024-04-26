@@ -3,7 +3,6 @@ package com.example.thecommerce.user.controller;
 import com.example.thecommerce.user.dto.JoinRequestDto;
 import com.example.thecommerce.user.dto.UserUpdateRequestDto;
 import com.example.thecommerce.user.dto.UserListResponseDto;
-import com.example.thecommerce.user.dto.UserResponseDto;
 import com.example.thecommerce.user.security.UserDetailsImpl;
 import com.example.thecommerce.user.service.UserService;
 import io.swagger.annotations.*;
@@ -14,6 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -38,7 +38,7 @@ public class UserController {
             @ApiResponse(code = 201,message = "location link")
     })
     @PostMapping("/join")
-    public ResponseEntity<String> signup(@RequestBody JoinRequestDto requestDto){
+    public ResponseEntity<String> signup(@Validated @RequestBody JoinRequestDto requestDto){
         return userService.signup(requestDto);
     }
 
@@ -73,7 +73,7 @@ public class UserController {
             @ApiResponse(code = 200,message = "회원정보 수정 완료")
     })
     @PutMapping()
-    public ResponseEntity<String> updateUser(@RequestBody UserUpdateRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ResponseEntity<String> updateUser(@Validated @RequestBody UserUpdateRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
         return userService.updateUser(requestDto, userDetails.getUser());
     }
 }
