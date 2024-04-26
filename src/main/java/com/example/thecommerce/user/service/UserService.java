@@ -5,8 +5,10 @@ import com.example.thecommerce.user.dto.JoinRequestDto;
 import com.example.thecommerce.user.entity.User;
 import com.example.thecommerce.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 //import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -15,14 +17,15 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j(topic = "userService")
 public class UserService {
 
     private final UserRepository userRepository;
-//    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
     public ResponseEntity<String> signup(JoinRequestDto requestDto) {
 
-//        String password = passwordEncoder.encode(requestDto.getPassword());
-        String password = requestDto.getPassword();
+        String password = passwordEncoder.encode(requestDto.getPassword());
+//        String password = requestDto.getPassword();
 
 
         Optional<User> isValid = userRepository.findByEmail(requestDto.getEmail());
