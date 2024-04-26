@@ -29,8 +29,6 @@ public class UserService {
     public ResponseEntity<String> signup(JoinRequestDto requestDto) {
 
         String password = passwordEncoder.encode(requestDto.getPassword());
-//        String password = requestDto.getPassword();
-
 
         Optional<User> isValid = userRepository.findByEmail(requestDto.getEmail());
         if (isValid.isPresent()){
@@ -49,26 +47,11 @@ public class UserService {
         return ResponseEntity.created(location).build();
     }
 
-//    public Page<ProductResponseDto> getProducts(int pageNumber, int pageSize, String sortBy, Sort.Direction direction) {
-//        // pageSize가 한번에 몇개를 넘겨줄지
-//        // pageNumber는 현재 페이지의 위치 값
-//        // direction : 정렬을 오름차순으로할지 내림차순으로 할지 결정
-//        // sortBy : 정렬기준
-//        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, direction, sortBy);
-//
-//        Page<Product> products = productRepository.findAll(pageRequest);
-//
-//        return products.map(ProductResponseDto::new);
-//    }
-
     public Page<UserListResponseDto> getAll(int pageNumber, int pageSize, String sortBy, Sort.Direction direction) {
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, direction, sortBy);
 
         Page<User> users = userRepository.findAll(pageRequest);
 
         return users.map(UserListResponseDto::new);
-
-
-//        return products.map(ProductResponseDto::new);
     }
 }

@@ -25,15 +25,16 @@ public class UserController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<Page<UserListResponseDto>> getProducts(
+    public ResponseEntity<Page<UserListResponseDto>> getUsers(
             @RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(defaultValue = "5") int pageSize,
-            @RequestParam(defaultValue = "id") String sortBy, // 추가: 선택적으로 정렬 기준을 받을 수 있음
-            @RequestParam(defaultValue = "DESC") String sortOrder // 정렬기준
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "DESC") String sortOrder
     ) {
         Sort.Direction direction = sortOrder.equalsIgnoreCase("ASC") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        String sorting = sortBy.equals("id") ? "id" : "createAt";
 
-        Page<UserListResponseDto> products = userService.getAll(pageNumber, pageSize, sortBy,direction);
-        return new ResponseEntity<>(products, HttpStatus.OK);
+        Page<UserListResponseDto> users = userService.getAll(pageNumber, pageSize, sorting,direction);
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 }
