@@ -58,6 +58,7 @@ public class WebSecurityConfig{
         http.authorizeHttpRequests((authorizeHttpRequests)->
                         authorizeHttpRequests
                                 .antMatchers("/api/user/join").permitAll()
+                                .antMatchers("/api/user/list").permitAll()
                                 .anyRequest().authenticated()
         );
 
