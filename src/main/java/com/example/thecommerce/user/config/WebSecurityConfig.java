@@ -59,6 +59,7 @@ public class WebSecurityConfig{
                         authorizeHttpRequests
                                 .antMatchers("/api/user/join").permitAll()
                                 .antMatchers("/api/user/list").permitAll()
+                                .antMatchers("/v2/api-docs", "/swagger-resources/**", "/swagger-ui.html","/swagger-ui/**").permitAll()
                                 .anyRequest().authenticated()
         );
 
