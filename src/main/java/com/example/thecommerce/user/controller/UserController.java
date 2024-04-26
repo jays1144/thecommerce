@@ -1,7 +1,10 @@
 package com.example.thecommerce.user.controller;
 
 import com.example.thecommerce.user.dto.JoinRequestDto;
+import com.example.thecommerce.user.dto.UserUpdateRequestDto;
 import com.example.thecommerce.user.dto.UserListResponseDto;
+import com.example.thecommerce.user.dto.UserResponseDto;
+import com.example.thecommerce.user.security.UserDetailsImpl;
 import com.example.thecommerce.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -36,5 +40,12 @@ public class UserController {
 
         Page<UserListResponseDto> users = userService.getAll(pageNumber, pageSize, sorting,direction);
         return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @PutMapping()
+    public ResponseEntity<String> updateUser(@RequestBody UserUpdateRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        ResponseEntity<String> tt = userService.updateUser(requestDto, userDetails.getUser());
+        System.out.println(tt);
+        return tt;
     }
 }

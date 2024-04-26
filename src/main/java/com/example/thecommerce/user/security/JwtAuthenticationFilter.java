@@ -2,6 +2,7 @@ package com.example.thecommerce.user.security;
 
 
 import com.example.thecommerce.user.dto.JoinRequestDto;
+import com.example.thecommerce.user.entity.UserRoleEnum;
 import com.example.thecommerce.user.jwt.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -46,9 +47,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication auth){
         String username = ((UserDetailsImpl) auth.getPrincipal()).getUsername();
-//        UserRoleEnum role = ((UserDetailsImpl)auth.getPrincipal()).getUser().getRole();
+        UserRoleEnum role = ((UserDetailsImpl)auth.getPrincipal()).getUser().getRole();
 
-        String token = jwtUtil.createToken(username);
+        String token = jwtUtil.createToken(username,role);
         jwtUtil.addJwtToCookie(token,response);
     }
 

@@ -2,6 +2,7 @@ package com.example.thecommerce.user.security;
 
 
 import com.example.thecommerce.user.entity.User;
+import com.example.thecommerce.user.entity.UserRoleEnum;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
@@ -34,7 +35,10 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities(){
-        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(null);
+        UserRoleEnum role = user.getRole();
+        String authority = role.getAuthority();
+        log.info(authority);
+        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(authority);
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(simpleGrantedAuthority);
 

@@ -1,14 +1,18 @@
 package com.example.thecommerce.user.jwt;
 
+import com.example.thecommerce.user.entity.UserRoleEnum;
 import com.example.thecommerce.user.msg.ErrorMessage;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
@@ -21,19 +25,23 @@ import java.util.Date;
 @Slf4j(topic = "JwtUtil")
 @Component
 public class JwtUtil {
+    // Header KEY 값
     public static final String AUTHORIZATION_HEADER = "Authorization";
-//    public static final String AUTHORIZATION_KEY = "auth";
+    // 사용자 권한 값의 KEY
+    public static final String AUTHORIZATION_KEY = "auth";
+    // Token 식별자
     public static final String BEARER_PREFIX = "Bearer ";
-    private final long TOKEN_TIME = 60 * 60 * 10000L;
+    // 토큰 만료시간
+    private final long TOKEN_TIME = 60 * 60 * 10000L; // 60분
 
-//    public static final String JWT_LOG_HEAD = "JWT 관련 로그";
+    public static final String JWT_LOG_HEAD = "JWT 관련 로그";
 
-    @Value("${jwt.secret.key}")
+    @Value("${jwt.secret.key}") // Base64 Encode 한 SecretKey
     private String secretKey;
     private Key key;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
-    public static final Logger logger = org.slf4j.LoggerFactory.getLogger(JwtUtil.class);
+    public static final Logger logger = LoggerFactory.getLogger(JWT_LOG_HEAD);
 
     @PostConstruct
     public void init() {
@@ -42,13 +50,13 @@ public class JwtUtil {
     }
 
     // 토큰 생성
-    public String createToken(String email) {
+    public String createToken(String email, UserRoleEnum role) {
         Date date = new Date();
 
         return BEARER_PREFIX +
                 Jwts.builder()
                         .setSubject(email) // 사용자 식별자값(ID)
-//                        .claim(AUTHORIZATION_KEY, "none") // 사용자 권한
+                        .claim(AUTHORIZATION_KEY, role) // 사용자 권한
                         .setExpiration(new Date(date.getTime() + TOKEN_TIME)) // 만료 시간
                         .setIssuedAt(date) // 발급일
                         .signWith(key, signatureAlgorithm) // 암호화 알고리즘
@@ -60,7 +68,7 @@ public class JwtUtil {
         try {
             token = URLEncoder.encode(token, "utf-8").replaceAll("\\+", "%20"); // Cookie Value 에는 공백이 불가능해서 encoding 진행
 
-            javax.servlet.http.Cookie cookie = new javax.servlet.http.Cookie(AUTHORIZATION_HEADER, token); // Name-Value
+            Cookie cookie = new Cookie(AUTHORIZATION_HEADER, token); // Name-Value
             cookie.setPath("/"); // 해당 쿠키가 어떤요청일때 같이 넘어가는지 설정 현재 상태는 모든요청에서 같이 넘어간다
 
             // Response 객체에 Cookie 추가
@@ -73,9 +81,9 @@ public class JwtUtil {
 
     // cookie에서 jwt를 사용하는 경우
     public String getTokenFromCookie(HttpServletRequest req) {
-        javax.servlet.http.Cookie[] cookies = req.getCookies();
-        if (cookies != null) {
-            for (javax.servlet.http.Cookie cookie : cookies) {
+        Cookie[] cookies = req.getCookies();
+        if(cookies != null) {
+            for (Cookie cookie : cookies) {
                 if (cookie.getName().equals(AUTHORIZATION_HEADER)) {
                     try {
                         String decodeCookie = URLDecoder.decode(cookie.getValue(), "UTF-8");
@@ -93,7 +101,7 @@ public class JwtUtil {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-        } catch (SecurityException | MalformedJwtException e) {
+        } catch (SecurityException | MalformedJwtException | SignatureException e) {
             logger.error(ErrorMessage.INVALID_JWT_ERROR_MESSAGE.getErrorMessage());
         } catch (ExpiredJwtException e) {
             logger.error(ErrorMessage.EXPIRED_JWT_ERROR_MESSAGE.getErrorMessage());
@@ -105,6 +113,7 @@ public class JwtUtil {
         return false;
     }
 
+    // 토큰에서 사용자 정보 가져오기
     public Claims getUserInfoFromToken(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
