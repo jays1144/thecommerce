@@ -12,6 +12,8 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @Table(name = "user")
+@Builder
+@AllArgsConstructor
 public class User extends Timestamped{
 
     @Id

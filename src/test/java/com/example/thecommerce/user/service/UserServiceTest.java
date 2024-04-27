@@ -1,72 +1,125 @@
 package com.example.thecommerce.user.service;
 
 import com.example.thecommerce.user.dto.JoinRequestDto;
+import com.example.thecommerce.user.dto.UserListResponseDto;
+import com.example.thecommerce.user.dto.UserUpdateRequestDto;
 import com.example.thecommerce.user.entity.User;
+import com.example.thecommerce.user.entity.UserRoleEnum;
 import com.example.thecommerce.user.repository.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
+import com.example.thecommerce.user.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.OngoingStubbing;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.transaction.Transactional;
+import java.net.URI;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.when;
-
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@Transactional
 class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
 
-    private User user;
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
-    @BeforeEach
-    void setUp(){
-        JoinRequestDto requestDto = new JoinRequestDto();
-        requestDto.setUserId("userId");
-        requestDto.setName("name");
-        requestDto.setEmail("email@email.com");
-        requestDto.setPhone("010-2222-3333");
-        requestDto.setPassword("password");
-        requestDto.setNickName("nickName");
+    @InjectMocks
+    private UserService userService;
 
-        user = new User(requestDto,requestDto.getPassword());
+    @Test
+    void signup_Success() {
+        // Given
+        JoinRequestDto requestDto = JoinRequestDto.builder()
+                .userId("userId")
+                .phone("010-2222-3333")
+                .email("newuser@example.com")
+                .name("name")
+                .nickName("nickName")
+                .password("password")
+                .build();
 
+       User user = User.builder()
+                .id(1L)
+                .userId("userId")
+                .role(UserRoleEnum.USER)
+                .password("password")
+                .phone("010-2222-3333")
+                .email("email@email.com")
+                .name("name")
+                .nickName("nickName")
+                .build();
+//        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+//                .path("/{id}")
+//                .buildAndExpand(user.getId())
+//                .toUri();
+
+        when(userRepository.findByEmail("newuser@example.com")).thenReturn(Optional.empty());
+        when(passwordEncoder.encode(requestDto.getPassword())).thenReturn("encodedPassword");
+
+        // When
+        ResponseEntity<String> response = userService.signup(requestDto);
+
+        // Then
+        verify(userRepository).save(any(User.class));
+        assertNotNull(response);
+        assertEquals(201, response.getStatusCodeValue());
+    }
+
+//    @Test
+//    void getAllUsers() {
+//        // Given
+//        int pageNumber = 0;
+//        int pageSize = 10;
+//        String sortBy = "userId";
+//        Page<User> mockedPage = mock(Page.class);
+//
+//        when(userRepository.findAll(any())).thenReturn(mockedPage);
+//
+//        // When
+//        Page<UserListResponseDto> result = userService.getAll(pageNumber, pageSize, sortBy);
+//
+//        // Then
+//        assertNotNull(result);
+//        verify(userRepository).findAll(any());
+//    }
+
+    @Test
+    void updateUser_Success() {
+        // Given
+        UserUpdateRequestDto requestDto = UserUpdateRequestDto.builder().name("changeName").build();
+
+        User user = User.builder().id(1L).build();
+
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+
+        // When
+        ResponseEntity<String> response = userService.updateUser(requestDto, user);
+
+        // Then
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("회원정보가 변경되었습니다", response.getBody());
     }
 
     @Test
-    void signup() {
-        lenient().when(userRepository.save(any(User.class))).thenReturn(user);
+    void updateUser_UserNotFound() {
+        // Given
+        UserUpdateRequestDto requestDto = UserUpdateRequestDto.builder().name("changeName").build();
+        User user = User.builder().id(1L).build();
 
-        when(userRepository.findByEmail("email@email.com")).thenReturn(Optional.of(user));
+        when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
 
-        Optional<User> savedUser = userRepository.findByEmail("email@email.com");
-        assertTrue(savedUser.isPresent());
-
-        assertEquals("name", savedUser.get().getName());
+        // When / Then
+        assertThrows(IllegalArgumentException.class, () -> userService.updateUser(requestDto, user));
     }
-
-
-
-//    @Test
-//    void getAll() {
-//    }
-//
-//    @Test
-//    void updateUser() {
-//    }
 }

@@ -1,12 +1,16 @@
 package com.example.thecommerce.user.dto;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Pattern;
 
 @Getter
+@Builder
+@AllArgsConstructor
 public class UserUpdateRequestDto {
 
     @ApiModelProperty(example = "email@email.com")

@@ -2,6 +2,8 @@ package com.example.thecommerce.user.dto;
 
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +12,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
 @Getter
-@Setter
+@Builder
+@AllArgsConstructor
 public class JoinRequestDto {
 
     @ApiModelProperty(example = "1")
