@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -40,15 +41,8 @@ public class UserService {
         User user = new User(requestDto, password);
 
         userRepository.save(user);
-//
-//        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-//                .path("/{id}")
-//                .buildAndExpand(user.getId())
-//                .toUri();
 
-        URI location = URI.create("http://localhost:8080/api/user/join");
-
-        return ResponseEntity.created(location).build();
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     public Page<UserListResponseDto> getAll(int pageNumber, int pageSize, String sortBy, Sort.Direction direction) {

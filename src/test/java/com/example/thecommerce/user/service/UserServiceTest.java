@@ -6,7 +6,7 @@ import com.example.thecommerce.user.dto.UserUpdateRequestDto;
 import com.example.thecommerce.user.entity.User;
 import com.example.thecommerce.user.entity.UserRoleEnum;
 import com.example.thecommerce.user.repository.UserRepository;
-import com.example.thecommerce.user.service.UserService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,13 +15,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -38,6 +34,7 @@ class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
+    @DisplayName("회원가입 성공")
     @Test
     void signup_Success() {
         // Given
@@ -49,17 +46,6 @@ class UserServiceTest {
                 .nickName("nickName")
                 .password("password")
                 .build();
-//
-//        User user = User.builder()
-//                .id(1L)
-//                .userId("userId")
-//                .role(UserRoleEnum.USER)
-//                .password("password")
-//                .phone("010-2222-3333")
-//                .email("email@email.com")
-//                .name("name")
-//                .nickName("nickName")
-//                .build();
 
         when(userRepository.findByEmail("newuser@example.com")).thenReturn(Optional.empty());
         when(passwordEncoder.encode(requestDto.getPassword())).thenReturn("encodedPassword");
@@ -71,13 +57,9 @@ class UserServiceTest {
         verify(userRepository).save(any(User.class));
         assertNotNull(response);
         assertEquals(201, response.getStatusCodeValue());
-
-        // Hardcoded URI
-        URI location = URI.create("http://localhost:8080/api/user/join");
-        assertEquals(location, response.getHeaders().getLocation());
     }
 
-
+    @DisplayName("회원 전체 조회")
     @Test
     void getAllUsers() {
         // Given
@@ -130,7 +112,7 @@ class UserServiceTest {
         assertNotNull(result);
     }
 
-
+    @DisplayName("회원 정보 수정")
     @Test
     void updateUser_Success() {
         // Given
@@ -149,6 +131,7 @@ class UserServiceTest {
         assertEquals("회원정보가 변경되었습니다", response.getBody());
     }
 
+    @DisplayName("회원 정보 수정 실패")
     @Test
     void updateUser_UserNotFound() {
         // Given
