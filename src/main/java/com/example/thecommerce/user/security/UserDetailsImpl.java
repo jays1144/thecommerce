@@ -19,7 +19,6 @@ public class UserDetailsImpl implements UserDetails {
     private final User user;
 
     public UserDetailsImpl(User user){
-        log.info(user.getEmail());
         this.user = user;
     }
 
