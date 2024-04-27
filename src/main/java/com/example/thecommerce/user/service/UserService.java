@@ -40,11 +40,13 @@ public class UserService {
         User user = new User(requestDto, password);
 
         userRepository.save(user);
+//
+//        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+//                .path("/{id}")
+//                .buildAndExpand(user.getId())
+//                .toUri();
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(user.getId())
-                .toUri();
+        URI location = URI.create("http://localhost:8080/api/user/join");
 
         return ResponseEntity.created(location).build();
     }

@@ -49,21 +49,17 @@ class UserServiceTest {
                 .nickName("nickName")
                 .password("password")
                 .build();
-
-       User user = User.builder()
-                .id(1L)
-                .userId("userId")
-                .role(UserRoleEnum.USER)
-                .password("password")
-                .phone("010-2222-3333")
-                .email("email@email.com")
-                .name("name")
-                .nickName("nickName")
-                .build();
-//        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-//                .path("/{id}")
-//                .buildAndExpand(user.getId())
-//                .toUri();
+//
+//        User user = User.builder()
+//                .id(1L)
+//                .userId("userId")
+//                .role(UserRoleEnum.USER)
+//                .password("password")
+//                .phone("010-2222-3333")
+//                .email("email@email.com")
+//                .name("name")
+//                .nickName("nickName")
+//                .build();
 
         when(userRepository.findByEmail("newuser@example.com")).thenReturn(Optional.empty());
         when(passwordEncoder.encode(requestDto.getPassword())).thenReturn("encodedPassword");
@@ -75,7 +71,12 @@ class UserServiceTest {
         verify(userRepository).save(any(User.class));
         assertNotNull(response);
         assertEquals(201, response.getStatusCodeValue());
+
+        // Hardcoded URI
+        URI location = URI.create("http://localhost:8080/api/user/join");
+        assertEquals(location, response.getHeaders().getLocation());
     }
+
 
     @Test
     void getAllUsers() {
