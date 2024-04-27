@@ -12,12 +12,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
+import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -75,23 +77,58 @@ class UserServiceTest {
         assertEquals(201, response.getStatusCodeValue());
     }
 
-//    @Test
-//    void getAllUsers() {
-//        // Given
-//        int pageNumber = 0;
-//        int pageSize = 10;
-//        String sortBy = "userId";
-//        Page<User> mockedPage = mock(Page.class);
-//
-//        when(userRepository.findAll(any())).thenReturn(mockedPage);
-//
-//        // When
-//        Page<UserListResponseDto> result = userService.getAll(pageNumber, pageSize, sortBy);
-//
-//        // Then
-//        assertNotNull(result);
-//        verify(userRepository).findAll(any());
-//    }
+    @Test
+    void getAllUsers() {
+        // Given
+        User user = User.builder()
+                .id(1L)
+                .userId("userId")
+                .role(UserRoleEnum.USER)
+                .password("password")
+                .phone("010-2222-3333")
+                .email("email@email.com")
+                .name("name")
+                .nickName("nickName")
+                .build();
+
+        User user2 = User.builder()
+                .id(2L)
+                .userId("userId2")
+                .role(UserRoleEnum.USER)
+                .password("password")
+                .phone("010-2222-3333")
+                .email("email2@email.com")
+                .name("name2")
+                .nickName("nickName")
+                .build();
+
+        User user3 = User.builder()
+                .id(3L)
+                .userId("userId3")
+                .role(UserRoleEnum.USER)
+                .password("password")
+                .phone("010-2222-3333")
+                .email("email3@email.com")
+                .name("name3")
+                .nickName("nickName")
+                .build();
+
+        List<User> users = new ArrayList<>();
+        users.add(user);
+        users.add(user2);
+        users.add(user3);
+
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "userId"));
+        Page<User> page = new PageImpl<>(users, pageable, users.size());
+        when(userRepository.findAll(pageable)).thenReturn(page);
+
+        // When
+        Page<UserListResponseDto> result = userService.getAll(0, 10, "userId", Sort.Direction.DESC);
+
+        // Then
+        assertNotNull(result);
+    }
+
 
     @Test
     void updateUser_Success() {
