@@ -42,7 +42,7 @@ public class UserService {
 
         userRepository.save(user);
 
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>("회원가입성공",HttpStatus.CREATED);
     }
 
     public Page<UserListResponseDto> getAll(int pageNumber, int pageSize, String sortBy, Sort.Direction direction) {

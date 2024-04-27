@@ -35,7 +35,7 @@ public class UserController {
             @ApiImplicitParam(name = "name", dataType = "String", value = "이름", paramType = "query")
     })
     @ApiResponses({
-            @ApiResponse(code = 201,message = "location link")
+            @ApiResponse(code = 201, message = "회원가입성공")
     })
     @PostMapping("/join")
     public ResponseEntity<String> signup(@Validated @RequestBody JoinRequestDto requestDto){
